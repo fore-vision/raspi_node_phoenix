@@ -25,7 +25,7 @@ struct tag_data {
 
 
 Napi::Value open(const Napi::CallbackInfo& info) {
-	cout << "open call" << endl;
+	//cout << "open call" << endl;
 	Napi::Env env = info.Env();
 	int uhfband= 0;
 
@@ -55,7 +55,7 @@ Napi::Value open(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value close(const Napi::CallbackInfo& info) {
-	cout << "close call" << endl;
+	//cout << "close call" << endl;
 	Napi::Env env = info.Env();
 	Type ret ;
 	switch(reader_status) {
@@ -75,7 +75,7 @@ Napi::Value close(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value stopOperation(const Napi::CallbackInfo& info) {
-	cout << "stopOperation call" << endl;
+	//cout << "stopOperation call" << endl;
 	Napi::Env env = info.Env();
 	if(reader_status == IDLE) return Napi::Number::New(env,-10);
 	Type ret = module.StopOperation();
@@ -83,7 +83,7 @@ Napi::Value stopOperation(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value getMaxPower(const Napi::CallbackInfo& info) {
-	cout << "getMaxPower call" << endl;
+	//cout << "getMaxPower call" << endl;
 	Napi::Env env = info.Env();
 
 	if( uhfMaxPower != 0 ){
@@ -93,7 +93,7 @@ Napi::Value getMaxPower(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value getAntennaPower(const Napi::CallbackInfo& info) {
-	cout << "getAntennaPower call" << endl;
+	//cout << "getAntennaPower call" << endl;
 	Napi::Env env = info.Env();
 	if( info.Length() != 1) {
 		Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
@@ -115,7 +115,7 @@ Napi::Value getAntennaPower(const Napi::CallbackInfo& info) {
 
 
 Napi::Value getAntennaState(const Napi::CallbackInfo& info) {
-	cout << "getAntennaState call" << endl;
+	//cout << "getAntennaState call" << endl;
 	Napi::Env env = info.Env();
 	if( info.Length() != 1) {
 		Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
@@ -135,7 +135,7 @@ Napi::Value getAntennaState(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value setAntennaState(const Napi::CallbackInfo& info) {
-	cout << "setAntennaState call" << endl;
+	//cout << "setAntennaState call" << endl;
 	Napi::Env env = info.Env();
 	if( info.Length() != 3) {
 		Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
@@ -161,7 +161,7 @@ Napi::Value setAntennaState(const Napi::CallbackInfo& info) {
 		Napi::TypeError::New( env, "Wrong power valuse").ThrowAsJavaScriptException();
 		return env.Null();
 	}
-	cout << "antenna = " << antennaNo << " enable = " << enable << " power = " << power << endl;
+	//cout << "antenna = " << antennaNo << " enable = " << enable << " power = " << power << endl;
 	if(reader_status != OPEN) return Napi::Number::New(env, -10);
 	if(antennaNo == 0 || antennaNo == 1) {
 		Type ret = module.SetAntennaState(antennaNo,enable,0,power);
@@ -174,23 +174,23 @@ Napi::Value setAntennaState(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value inventory(const Napi::CallbackInfo & info) {
-	cout << "inventory call" << endl;
+	//cout << "inventory call" << endl;
 	Napi::Env env = info.Env();
 	ModuleAPI::INVENTORY_CALLBACK inventory_function = [&](string &epccode,float rssi, float phase, int channel, int antenna) {
 
-		cout << "read epccode = " << epccode << endl;
+		////cout << "read epccode = " << epccode << endl;
 	};
 		
 	th = new thread([&] {
-		cout << "inventory start" << endl;
+		//cout << "inventory start" << endl;
 		module.Inventory(false,inventory_function);
-		cout << "inventory end" << endl;
+		//cout << "inventory end" << endl;
 	});
 	return Napi::Number::New(env,0);
 }
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
-	cout << "init call" << endl;
+	//cout << "init call" << endl;
 	exports.Set(Napi::String::New(env,"open"),
 		Napi::Function::New(env,open));
 	exports.Set(Napi::String::New(env,"close"),

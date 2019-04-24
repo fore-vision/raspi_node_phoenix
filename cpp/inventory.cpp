@@ -76,9 +76,9 @@ static void ExecuteWork(napi_env env, void* data) {
 
 };
 	 reader_status = INVENTORY;
-     cout << "inventory start" << endl;
+     //cout << "inventory start" << endl;
 	 module.Inventory(true,inventory_function);
-	 cout << "inventory end" << endl;
+	 //cout << "inventory end" << endl;
 	reader_status = OPEN;
 }
 
