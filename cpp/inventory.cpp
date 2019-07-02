@@ -47,12 +47,12 @@ static void CallJs(napi_env env, napi_value js_cb, void* context, void* data) {
 
     // Call the JavaScript function and pass it the prime that the secondary
     // thread found.
-    assert(napi_call_function(env,
+    napi_call_function(env,
                               undefined,
                               js_cb,
                               1,
                               &js_epccode,
-                              NULL) == napi_ok);
+                              NULL) ;
   } 
 
   // Free the item created by the worker thread.
