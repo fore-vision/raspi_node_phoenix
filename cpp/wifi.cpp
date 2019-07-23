@@ -168,6 +168,32 @@ Napi::Value setFastMode(const Napi::CallbackInfo& info) {
 }
 				
 
+Napi::Value setFrequency920(const Napi::CallbackInfo& info) {
+	Napi::Env env = info.Env();
+	if( info.Length() != 1) {
+		Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
+		return env.Null();
+	}
+	if( !info[0].IsBoolean() ) {
+		Napi::TypeError::New(env, "Wroing argument").ThrowAsJavaScriptException();
+		return env.Null();
+	}
+	bool frequency920 = info[0].As<Napi::Boolean>().Value();
+	Type ret = OK;
+	module.WriteRegister(0x0C01,0);
+	module.WriteRegister(0x0C02,!frequency920);		
+	module.WriteRegister(0x0C01,6);
+	module.WriteRegister(0x0C02,!frequency920);		
+	module.WriteRegister(0x0C01,12);
+	module.WriteRegister(0x0C02,!frequency920);		
+	module.WriteRegister(0x0C01,31);
+	module.WriteRegister(0x0C02,!frequency920);		
+	module.WriteRegister(0x0C01,32);
+	module.WriteRegister(0x0C02,!frequency920);		
+	module.WriteRegister(0x0C01,33);
+	module.WriteRegister(0x0C02,!frequency920);		
+	return Napi::Number::New(env,ret);
+}
 
 Napi::Value setAntennaState(const Napi::CallbackInfo& info) {
 	//cout << "setAntennaState call" << endl;
@@ -244,6 +270,8 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
 		Napi::Function::New(env,inventory));
 	exports.Set(Napi::String::New(env,"setfastmode"),
 		Napi::Function::New(env,setFastMode));
+	exports.Set(Napi::String::New(env,"setfrequency920"),
+		Napi::Function::New(env,setFrequency920));
 	init_inventory(env,exports);
 	return exports;
 }
