@@ -134,6 +134,41 @@ Napi::Value getAntennaState(const Napi::CallbackInfo& info) {
 	}
 }
 
+Napi::Value setFastMode(const Napi::CallbackInfo& info) {
+	Napi::Env env = info.Env();
+	if( info.Length() != 1) {
+		Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
+		return env.Null();
+	}
+	if( !info[0].IsBoolean() ) {
+		Napi::TypeError::New(env, "Wroing argument").ThrowAsJavaScriptException();
+		return env.Null();
+	}
+	bool fastmode = info[0].As<Napi::Boolean>().Value();
+	Type ret;
+	if(fastmode) {
+			
+		ret = module.SetLinkProfile(3);
+		if(ret == OK) {
+			ret = module.SetTxTime(400,0);
+		}
+		if(ret == OK ) {
+			ret = module.SetQueryParam(0,2,2,4);
+		}
+	} else {
+		ret = module.SetTxTime(200,200);
+		if(ret == OK) {
+			ret = module.SetLinkProfile(1);
+		}
+		if(ret == OK ) {
+			ret = module.SetQueryParam(0,2,2,4);
+		}
+	}
+	return Napi::Number::New(env,ret);
+}
+				
+
+
 Napi::Value setAntennaState(const Napi::CallbackInfo& info) {
 	//cout << "setAntennaState call" << endl;
 	Napi::Env env = info.Env();
@@ -164,7 +199,7 @@ Napi::Value setAntennaState(const Napi::CallbackInfo& info) {
 	//cout << "antenna = " << antennaNo << " enable = " << enable << " power = " << power << endl;
 	if(reader_status != OPEN) return Napi::Number::New(env, -10);
 	if(antennaNo == 0 || antennaNo == 1) {
-		Type ret = module.SetAntennaState(antennaNo,enable,0,power);
+		Type ret = module.SetAntennaState(antennaNo,enable,2000,power);
 		
 		return Napi::Number::New(env,ret);
 	} else {
@@ -207,6 +242,8 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
 		Napi::Function::New(env,setAntennaState));
 	exports.Set(Napi::String::New(env,"inventory"),
 		Napi::Function::New(env,inventory));
+	exports.Set(Napi::String::New(env,"setfastmode"),
+		Napi::Function::New(env,setFastMode));
 	init_inventory(env,exports);
 	return exports;
 }
