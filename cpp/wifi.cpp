@@ -44,7 +44,7 @@ Napi::Value open(const Napi::CallbackInfo& info) {
 	if( ret == 0 ) {
 
 		module.RecallModuleParam(&uhfband,&uhfMaxPower);
-		int dwell =0;
+		int dwell =2000;
 		module.GetAntennaState(0,antennaEnable,&dwell,antennaPower);
 		module.GetAntennaState(1,antennaEnable+1,&dwell,antennaPower+1);
 		reader_status = OPEN;
@@ -147,12 +147,14 @@ Napi::Value setFastMode(const Napi::CallbackInfo& info) {
 	bool fastmode = info[0].As<Napi::Boolean>().Value();
 	Type ret;
 	if(fastmode) {
-			
+		cout << "fastmode " << endl;	
 		ret = module.SetLinkProfile(3);
 		if(ret == OK) {
+			cout << "setTxTime " << endl;	
 			ret = module.SetTxTime(400,0);
 		}
 		if(ret == OK ) {
+			cout << "setQuernParam" << endl;	
 			ret = module.SetQueryParam(0,2,2,4);
 		}
 	} else {
@@ -180,18 +182,20 @@ Napi::Value setFrequency920(const Napi::CallbackInfo& info) {
 	}
 	bool frequency920 = info[0].As<Napi::Boolean>().Value();
 	Type ret = OK;
+	unsigned int freq = frequency920 ? 0 : 1;
+	cout << "frequency flag = " << freq <<  endl;	
 	module.WriteRegister(0x0C01,0);
-	module.WriteRegister(0x0C02,!frequency920);		
+	module.WriteRegister(0x0C02,freq);		
 	module.WriteRegister(0x0C01,6);
-	module.WriteRegister(0x0C02,!frequency920);		
+	module.WriteRegister(0x0C02,freq);		
 	module.WriteRegister(0x0C01,12);
-	module.WriteRegister(0x0C02,!frequency920);		
+	module.WriteRegister(0x0C02,freq);		
 	module.WriteRegister(0x0C01,31);
-	module.WriteRegister(0x0C02,!frequency920);		
+	module.WriteRegister(0x0C02,freq);		
 	module.WriteRegister(0x0C01,32);
-	module.WriteRegister(0x0C02,!frequency920);		
+	module.WriteRegister(0x0C02,freq);		
 	module.WriteRegister(0x0C01,33);
-	module.WriteRegister(0x0C02,!frequency920);		
+	module.WriteRegister(0x0C02,freq);		
 	return Napi::Number::New(env,ret);
 }
 
