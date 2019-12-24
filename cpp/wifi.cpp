@@ -62,6 +62,8 @@ Napi::Value close(const Napi::CallbackInfo& info) {
 
 	case INVENTORY:
 	    ret = module.StopOperation();
+		ret = module.Close();
+		break;
 	case OPEN:
 		ret = module.Close();
 		break;
