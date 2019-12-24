@@ -65,7 +65,7 @@ static void ExecuteWork(napi_env env, void* data) {
 
 	ModuleAPI::INVENTORY_CALLBACK inventory_function = [&](string &epccode,float rssi, float phase, int channel, int antenna) {
   assert(napi_acquire_threadsafe_function(addon_data->tsfn) == napi_ok);
-	char * epcchar = (char *)malloc(256);
+	char * epcchar = (char *)malloc(256+epccode.length());
 	  //strcpy(epcchar,epccode.c_str());
 	  sprintf(epcchar,"{\"epccode\":\"%s\",\"antenna\":%d,\"rssi\":%f}",epccode.c_str(),antenna,rssi);
       assert(napi_call_threadsafe_function(addon_data->tsfn,
