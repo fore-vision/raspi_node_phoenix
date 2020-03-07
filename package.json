@@ -1,7 +1,7 @@
 {
 		"name": "phoenixreadermodule",
-		"version": "0.1.0",
-		"description": "phoenix reader module on raspberry pi",
+		"version": "0.2.0",
+		"description": "phoenix reader module on Linux",
 		"main": "main.js",
 		"private": true,
 		"dependencies": {

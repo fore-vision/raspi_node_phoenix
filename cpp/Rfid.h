@@ -1,6 +1,9 @@
 #include <napi.h>
 
 #include "LU9000.h"
+
+#ifndef __RFID_H__
+#define __RFID_H__
 using namespace LU9000;
 enum
 {
@@ -17,7 +20,7 @@ public:
 private:
     int reader_status;
     int uhfMaxPower;
-    static Napi::FunctionReference constructor;
+    static Napi::FunctionReference s_constructor;
     ModuleAPI moduleApi;
     Napi::Value Open(const Napi::CallbackInfo &info);
     Napi::Value SetAntennaState(const Napi::CallbackInfo &info);
@@ -26,3 +29,5 @@ private:
     //Napi::Value Inventory(const Napi::CallbackInfo &info);
     //Napi::Value Stop(const Napi::CallbackInfo &Info);
 };
+
+#endif

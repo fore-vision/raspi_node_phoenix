@@ -1,12 +1,14 @@
 #include "Rfid.h"
 
+Napi::FunctionReference Rfid::s_constructor;
+
 Napi::Object Rfid::Init(Napi::Env env, Napi::Object exports)
 {
     Napi::Function func =
         DefineClass(env, "rfid", {InstanceMethod("Open", &Rfid::Open), InstanceMethod("Close", &Rfid::Close), InstanceMethod("SetAntennaState", &Rfid::SetAntennaState), InstanceMethod("GetMaxPower", &Rfid::GetMaxPower)});
 
-    constructor = Napi::Persistent(func);
-    constructor.SuppressDestruct();
+    s_constructor = Napi::Persistent(func);
+    s_constructor.SuppressDestruct();
     exports.Set("rfid", func);
     return exports;
 }
@@ -40,7 +42,7 @@ Napi::Value Rfid::Open(const Napi::CallbackInfo &info)
     if (ret == 0)
     {
 
-        //moduleApi.RecallModuleParam(&uhfband, &uhfMaxPower);
+        moduleApi.RecallModuleParam(&uhfband, &uhfMaxPower);
         //int dwell = 2000;
         //moduleApi.GetAntennaState(0, antennaEnable, &dwell, antennaPower);
         //moduleApi.GetAntennaState(1, antennaEnable + 1, &dwell, antennaPower + 1);
@@ -176,3 +178,11 @@ Napi::Value Rfid::SetAntennaState(const Napi::CallbackInfo &info)
         return env.Null();
     }
 }
+
+Napi::Object Init(Napi::Env env, Napi::Object exports)
+{
+    Rfid::Init(env, exports);
+    return exports;
+}
+
+NODE_API_MODULE(phoenixreader, Init)
