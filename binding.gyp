@@ -4,7 +4,7 @@
 			"target_name": "phoenixreader",
 			"cflags!": [ "-fno-exceptions" ],
 			"cflags_cc!": [ "-fno-exceptions" ,'-std=c++14'],
-			"sources" : [ "cpp/Rfid.cpp" ],
+			"sources" : [ "cpp/Rfid.cpp", "cpp/Inventory.cpp"],
 			"include_dirs" : [
 				"<!@(node -p \"require('node-addon-api').include\")"
 			],

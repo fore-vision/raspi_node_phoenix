@@ -5,7 +5,7 @@ Napi::FunctionReference Rfid::s_constructor;
 Napi::Object Rfid::Init(Napi::Env env, Napi::Object exports)
 {
     Napi::Function func =
-        DefineClass(env, "rfid", {InstanceMethod("Open", &Rfid::Open), InstanceMethod("Close", &Rfid::Close), InstanceMethod("SetAntennaState", &Rfid::SetAntennaState), InstanceMethod("GetMaxPower", &Rfid::GetMaxPower)});
+        DefineClass(env, "rfid", {InstanceMethod("Open", &Rfid::Open), InstanceMethod("Close", &Rfid::Close), InstanceMethod("SetAntennaState", &Rfid::SetAntennaState), InstanceMethod("GetMaxPower", &Rfid::GetMaxPower), InstanceMethod("Inventory", &Rfid::Inventory), InstanceMethod("Stop", &Rfid::Stop)});
 
     s_constructor = Napi::Persistent(func);
     s_constructor.SuppressDestruct();
