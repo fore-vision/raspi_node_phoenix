@@ -1,3 +1,5 @@
+const {
+    rfid
+} = require('bindings')('phoenixreader')
 
-
-module.exports = require('bindings')('phoenixreader')
+module.exports = rfid;
