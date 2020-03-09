@@ -38,17 +38,39 @@ Napi::Value Rfid::Inventory(const Napi::CallbackInfo &info)
   return Napi::Boolean::New(env, true);
 }
 
+struct EpcData
+{
+  std::string epccode;
+  float rssi;
+  float phase;
+  int channel;
+  int antenna;
+};
+
 void inventory(InventoryContext *context)
 {
   auto func = [](std::string &epccode, float rssi, float phase, int channel, int antenna, void *data) -> void {
     auto callbackJS = [](Napi::Env env, Napi::Function jsCallback, void *epc) {
-      jsCallback.Call({Napi::String::New(env, (const char *)epc)});
-      delete epc;
+      struct EpcData *epcData = (struct EpcData *)epc;
+      Napi::Object obj = Napi::Object::New(env);
+      obj.Set("epccode", epcData->epccode);
+      obj.Set("rssi", epcData->rssi);
+      obj.Set("phase", epcData->phase);
+      obj.Set("channel", epcData->channel);
+      obj.Set("antenna", epcData->antenna);
+
+      jsCallback.Call({obj});
+      delete epcData;
     };
-    char *epcchar = new char[256 + epccode.length()];
+    struct EpcData *epcData = new EpcData();
+    epcData->epccode = epccode;
+    epcData->rssi = rssi;
+    epcData->phase = phase;
+    epcData->channel = channel;
+    epcData->antenna = antenna;
+
     InventoryContext *inv = (InventoryContext *)data;
-    sprintf(epcchar, "{\"epccode\":\"%s\",\"antenna\":%d,\"rssi\":%f}", epccode.c_str(), antenna, rssi);
-    inv->invfn.BlockingCall(epcchar, callbackJS);
+    inv->invfn.BlockingCall(epcData, callbackJS);
   };
   context->pRfid->reader_status = INVENTORY;
   context->pRfid->inventoryThread(context, func);

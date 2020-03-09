@@ -5,7 +5,7 @@ Napi::FunctionReference Rfid::s_constructor;
 Napi::Object Rfid::Init(Napi::Env env, Napi::Object exports)
 {
     Napi::Function func =
-        DefineClass(env, "rfid", {InstanceMethod("Open", &Rfid::Open), InstanceMethod("Close", &Rfid::Close), InstanceMethod("SetAntennaState", &Rfid::SetAntennaState), InstanceMethod("GetMaxPower", &Rfid::GetMaxPower), InstanceMethod("Inventory", &Rfid::Inventory), InstanceMethod("Stop", &Rfid::Stop)});
+        DefineClass(env, "rfid", {InstanceMethod("Open", &Rfid::Open), InstanceMethod("Close", &Rfid::Close), InstanceMethod("GetAntennaState", &Rfid::GetAntennaState), InstanceMethod("SetAntennaState", &Rfid::SetAntennaState), InstanceMethod("GetMaxPower", &Rfid::GetMaxPower), InstanceMethod("Inventory", &Rfid::Inventory), InstanceMethod("Stop", &Rfid::Stop)});
 
     s_constructor = Napi::Persistent(func);
     s_constructor.SuppressDestruct();
@@ -43,9 +43,6 @@ Napi::Value Rfid::Open(const Napi::CallbackInfo &info)
     {
 
         moduleApi.RecallModuleParam(&uhfband, &uhfMaxPower);
-        //int dwell = 2000;
-        //moduleApi.GetAntennaState(0, antennaEnable, &dwell, antennaPower);
-        //moduleApi.GetAntennaState(1, antennaEnable + 1, &dwell, antennaPower + 1);
         reader_status = OPEN;
     }
     else
@@ -82,16 +79,6 @@ Napi::Value Rfid::Close(const Napi::CallbackInfo &info)
     return Napi::Number::New(env, ret);
 }
 
-// Napi::Value stopOperation(const Napi::CallbackInfo &info)
-// {
-//     //cout << "stopOperation call" << endl;
-//     Napi::Env env = info.Env();
-//     if (reader_status == IDLE)
-//         return Napi::Number::New(env, -10);
-//     Type ret = moduleApi.StopOperation();
-//     return Napi::Number::New(env, ret);
-// }
-
 Napi::Value Rfid::GetMaxPower(const Napi::CallbackInfo &info)
 {
     //cout << "getMaxPower call" << endl;
@@ -104,31 +91,47 @@ Napi::Value Rfid::GetMaxPower(const Napi::CallbackInfo &info)
     return Napi::Number::New(env, 0);
 }
 
-// Napi::Value getAntennaState(const Napi::CallbackInfo &info)
-// {
-//     //cout << "getAntennaState call" << endl;
-//     Napi::Env env = info.Env();
-//     if (info.Length() != 1)
-//     {
-//         Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
-//         return env.Null();
-//     }
-//     if (!info[0].IsNumber())
-//     {
-//         Napi::TypeError::New(env, "Wrong argument").ThrowAsJavaScriptException();
-//         return env.Null();
-//     }
-//     int antennaNo = info[0].As<Napi::Number>().Int64Value();
-//     if (antennaNo == 0 || antennaNo == 1)
-//     {
-//         return Napi::Boolean::New(env, antennaEnable[antennaNo]);
-//     }
-//     else
-//     {
-//         Napi::TypeError::New(env, "Wrong antenna No").ThrowAsJavaScriptException();
-//         return env.Null();
-//     }
-// }
+Napi::Value Rfid::GetAntennaState(const Napi::CallbackInfo &info)
+{
+    //cout << "getAntennaState call" << endl;
+    Napi::Env env = info.Env();
+    if (info.Length() != 1)
+    {
+        Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+    if (!info[0].IsNumber())
+    {
+        Napi::TypeError::New(env, "Wrong argument").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+    int antennaNo = info[0].As<Napi::Number>().Int64Value();
+    if (antennaNo == 0 || antennaNo == 1)
+    {
+        bool enable;
+        int dwell;
+        int power;
+        Type ret = moduleApi.GetAntennaState(antennaNo, &enable, &dwell, &power);
+        if (ret == 0)
+        {
+            Napi::Object obj = Napi::Object::New(env);
+            obj.Set("enable", enable);
+            //obj.Set("dwell", dwell);
+            obj.Set("power", power);
+            return obj;
+        }
+        else
+        {
+            Napi::TypeError::New(env, "Internal error").ThrowAsJavaScriptException();
+            return env.Null();
+        }
+    }
+    else
+    {
+        Napi::TypeError::New(env, "Wrong antenna No").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+}
 
 Napi::Value Rfid::SetAntennaState(const Napi::CallbackInfo &info)
 {
