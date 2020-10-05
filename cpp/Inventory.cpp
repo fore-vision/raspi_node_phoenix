@@ -90,8 +90,11 @@ void FinalizerCallback(Napi::Env env, void *finalizeData, InventoryContext *cont
 Napi::Value Rfid::Stop(const Napi::CallbackInfo &Info)
 {
   Napi::Env env = Info.Env();
+  cout << "stop call" << endl;
   if (reader_status == IDLE)
     return Napi::Number::New(env, -10);
+  cout << "stop call 2" << endl;
   Type ret = moduleApi.StopOperation();
+  cout << "stop call 3" << endl;
   return Napi::Number::New(env, ret);
 }
