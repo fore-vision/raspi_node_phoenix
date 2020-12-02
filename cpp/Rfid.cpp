@@ -185,7 +185,7 @@ Napi::Value Rfid::SetAntennaState(const Napi::CallbackInfo &info)
 Napi::Value Rfid::SetQueryParam(const Napi::CallbackInfo &info)
 {
     Napi::Env env = info.Env();
-    if (info.Length() != 3)
+    if (info.Length() != 4)
     {
         Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
         return env.Null();
