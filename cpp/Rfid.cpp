@@ -5,7 +5,7 @@ Napi::FunctionReference Rfid::s_constructor;
 Napi::Object Rfid::Init(Napi::Env env, Napi::Object exports)
 {
     Napi::Function func =
-        DefineClass(env, "rfid", {InstanceMethod("Open", &Rfid::Open), InstanceMethod("Close", &Rfid::Close), InstanceMethod("GetAntennaState", &Rfid::GetAntennaState), InstanceMethod("SetAntennaState", &Rfid::SetAntennaState), InstanceMethod("GetMaxPower", &Rfid::GetMaxPower), InstanceMethod("Inventory", &Rfid::Inventory), InstanceMethod("Stop", &Rfid::Stop)});
+        DefineClass(env, "rfid", {InstanceMethod("Open", &Rfid::Open), InstanceMethod("Close", &Rfid::Close), InstanceMethod("GetAntennaState", &Rfid::GetAntennaState), InstanceMethod("SetAntennaState", &Rfid::SetAntennaState), InstanceMethod("SetQueryParam", &Rfid::SetQueryParam), InstanceMethod("GetQueryParam", &Rfid::GetQueryParam), InstanceMethod("GetMaxPower", &Rfid::GetMaxPower), InstanceMethod("Inventory", &Rfid::Inventory), InstanceMethod("Stop", &Rfid::Stop)});
 
     s_constructor = Napi::Persistent(func);
     s_constructor.SuppressDestruct();
@@ -178,6 +178,62 @@ Napi::Value Rfid::SetAntennaState(const Napi::CallbackInfo &info)
     else
     {
         Napi::TypeError::New(env, "Wrong antenna No").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+}
+
+Napi::Value Rfid::SetQueryParam(const Napi::CallbackInfo &info)
+{
+    Napi::Env env = info.Env();
+    if (info.Length() != 3)
+    {
+        Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+    if (!info[0].IsNumber())
+    {
+        Napi::TypeError::New(env, "Wrong argument").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+    int sel = info[0].As<Napi::Number>().Int64Value();
+    if (!info[1].IsNumber())
+    {
+        Napi::TypeError::New(env, "Wrong argument").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+    int session = info[1].As<Napi::Number>().Int64Value();
+    if (!info[2].IsNumber())
+    {
+        Napi::TypeError::New(env, "Wrong argument").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+    int target = info[2].As<Napi::Number>().Int64Value();
+    if (!info[3].IsNumber())
+    {
+        Napi::TypeError::New(env, "Wrong argument").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+    int q = info[3].As<Napi::Number>().Int64Value();
+    Type type = moduleApi.SetQueryParam(sel, session, target, q);
+    return Napi::Number::New(env, type);
+}
+Napi::Value Rfid::GetQueryParam(const Napi::CallbackInfo &info)
+{
+    int sel, session, target, q;
+    Napi::Env env = info.Env();
+    Type type = moduleApi.GetQueryParam(&sel, &session, &target, &q);
+    if (type == 0)
+    {
+        Napi::Object obj = Napi::Object::New(env);
+        obj.Set("sel", sel);
+        obj.Set("session", session);
+        obj.Set("target", target);
+        obj.Set("q", q);
+        return obj;
+    }
+    else
+    {
+        Napi::TypeError::New(env, "Internal error").ThrowAsJavaScriptException();
         return env.Null();
     }
 }
