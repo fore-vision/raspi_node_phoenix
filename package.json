@@ -1,12 +1,12 @@
 {
-		"name": "phoenixreadermodule",
-		"version": "0.2.0",
-		"description": "phoenix reader module on Linux",
-		"main": "main.js",
-		"private": true,
-		"dependencies": {
-				"bindings": "~1.2.1",
-				"node-addon-api": "^2.0.0"
-		},
-		"gypfile": true
+	"name": "phoenixreadermodule",
+	"version": "2.1.0",
+	"description": "phoenix reader module on Linux",
+	"main": "main.js",
+	"private": true,
+	"dependencies": {
+		"bindings": "~1.2.1",
+		"node-addon-api": "^2.0.0"
+	},
+	"gypfile": true
 }

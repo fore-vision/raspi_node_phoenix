@@ -8,7 +8,8 @@ let ret = rfid1.Open('/dev/ttyUSB0');
 console.log("open = " + ret);
 ret = rfid1.GetMaxPower();
 console.log("GetMaxpower = " + ret);
-rfid1.SetAntennaState(0, true, 100);
+rfid1.SetAntennaState(0, true, 300);
+rfid1.SetAntennaState(1, true, 300);
 const obj = rfid1.GetAntennaState(0);
 console.log(obj);
 
@@ -26,4 +27,4 @@ rfid1.Inventory((data) => {
     console.log(data)
 });
 
-setTimeout(process_end, 3 * 1000);
+setTimeout(process_end, 10 * 1000);
