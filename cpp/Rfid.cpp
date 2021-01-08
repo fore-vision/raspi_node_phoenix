@@ -126,7 +126,7 @@ Napi::Value Rfid::GetAntennaState(const Napi::CallbackInfo &info)
         {
             Napi::Object obj = Napi::Object::New(env);
             obj.Set("enable", enable);
-            //obj.Set("dwell", dwell);
+            obj.Set("dwell", dwell);
             obj.Set("power", power);
             return obj;
         }
