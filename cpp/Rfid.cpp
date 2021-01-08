@@ -214,7 +214,7 @@ Napi::Value Rfid::GetTxTime(const Napi::CallbackInfo &info)
 Napi::Value Rfid::SetTxTime(const Napi::CallbackInfo &info)
 {
     Napi::Env env = info.Env();
-    if (info.Length() != 4)
+    if (info.Length() != 2)
     {
         Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
         return env.Null();
