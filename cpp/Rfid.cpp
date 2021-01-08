@@ -5,7 +5,18 @@ Napi::FunctionReference Rfid::s_constructor;
 Napi::Object Rfid::Init(Napi::Env env, Napi::Object exports)
 {
     Napi::Function func =
-        DefineClass(env, "rfid", {InstanceMethod("Open", &Rfid::Open), InstanceMethod("Close", &Rfid::Close), InstanceMethod("GetAntennaState", &Rfid::GetAntennaState), InstanceMethod("SetAntennaState", &Rfid::SetAntennaState), InstanceMethod("SetQueryParam", &Rfid::SetQueryParam), InstanceMethod("GetQueryParam", &Rfid::GetQueryParam), InstanceMethod("GetMaxPower", &Rfid::GetMaxPower), InstanceMethod("Inventory", &Rfid::Inventory), InstanceMethod("Stop", &Rfid::Stop)});
+        DefineClass(env, "rfid",
+                    {InstanceMethod("Open", &Rfid::Open),
+                     InstanceMethod("Close", &Rfid::Close),
+                     InstanceMethod("GetAntennaState", &Rfid::GetAntennaState),
+                     InstanceMethod("SetAntennaState", &Rfid::SetAntennaState),
+                     InstanceMethod("GetTxTime", &Rfid::GetTxTime),
+                     InstanceMethod("SetTxTime", &Rfid::SetTxTime),
+                     InstanceMethod("SetQueryParam", &Rfid::SetQueryParam),
+                     InstanceMethod("GetQueryParam", &Rfid::GetQueryParam),
+                     InstanceMethod("GetMaxPower", &Rfid::GetMaxPower),
+                     InstanceMethod("Inventory", &Rfid::Inventory),
+                     InstanceMethod("Stop", &Rfid::Stop)});
 
     s_constructor = Napi::Persistent(func);
     s_constructor.SuppressDestruct();
@@ -14,7 +25,6 @@ Napi::Object Rfid::Init(Napi::Env env, Napi::Object exports)
 }
 Rfid::Rfid(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Rfid>(info)
 {
-    Napi::Env env = info.Env();
     reader_status = IDLE;
     uhfMaxPower = 0;
 }
@@ -180,6 +190,49 @@ Napi::Value Rfid::SetAntennaState(const Napi::CallbackInfo &info)
         Napi::TypeError::New(env, "Wrong antenna No").ThrowAsJavaScriptException();
         return env.Null();
     }
+}
+
+Napi::Value Rfid::GetTxTime(const Napi::CallbackInfo &info)
+{
+    Napi::Env env = info.Env();
+    int onTime, offTime;
+    Type ret = moduleApi.GetTxTime(&onTime, &offTime);
+    if (ret == 0)
+    {
+        Napi::Object obj = Napi::Object::New(env);
+        obj.Set("onTime", onTime);
+        obj.Set("offTime", offTime);
+        return obj;
+    }
+    else
+    {
+        Napi::TypeError::New(env, "Internal error").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+}
+
+Napi::Value Rfid::SetTxTime(const Napi::CallbackInfo &info)
+{
+    Napi::Env env = info.Env();
+    if (info.Length() != 4)
+    {
+        Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+    if (!info[0].IsNumber())
+    {
+        Napi::TypeError::New(env, "Wrong argument").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+    int onTime = info[0].As<Napi::Number>().Int64Value();
+    if (!info[1].IsNumber())
+    {
+        Napi::TypeError::New(env, "Wrong argument").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+    int offTime = info[1].As<Napi::Number>().Int64Value();
+    Type type = moduleApi.SetTxTime(onTime, offTime);
+    return Napi::Number::New(env, type);
 }
 
 Napi::Value Rfid::SetQueryParam(const Napi::CallbackInfo &info)

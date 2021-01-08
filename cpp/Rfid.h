@@ -32,6 +32,8 @@ private:
     Napi::Value GetAntennaState(const Napi::CallbackInfo &info);
     Napi::Value SetQueryParam(const Napi::CallbackInfo &info);
     Napi::Value GetQueryParam(const Napi::CallbackInfo &info);
+    Napi::Value GetTxTime(const Napi::CallbackInfo &info);
+    Napi::Value SetTxTime(const Napi::CallbackInfo &info);
     Napi::Value GetMaxPower(const Napi::CallbackInfo &info);
     Napi::Value Close(const Napi::CallbackInfo &info);
     Napi::Value Inventory(const Napi::CallbackInfo &info);
