@@ -147,7 +147,7 @@ Napi::Value Rfid::SetAntennaState(const Napi::CallbackInfo &info)
 {
     //cout << "setAntennaState call" << endl;
     Napi::Env env = info.Env();
-    if (info.Length() != 3)
+    if (info.Length() != 4)
     {
         Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
         return env.Null();
@@ -176,12 +176,18 @@ Napi::Value Rfid::SetAntennaState(const Napi::CallbackInfo &info)
         Napi::TypeError::New(env, "Wrong power valuse").ThrowAsJavaScriptException();
         return env.Null();
     }
+    if (!info[3].IsNumber())
+    {
+        Napi::TypeError::New(env, "Wrong argument").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+    int dwell = info[3].As<Napi::Number>().Int64Value();
     //cout << "antenna = " << antennaNo << " enable = " << enable << " power = " << power << endl;
     if (reader_status != OPEN)
         return Napi::Number::New(env, -10);
     if (antennaNo == 0 || antennaNo == 1)
     {
-        Type ret = moduleApi.SetAntennaState(antennaNo, enable, 2000, power);
+        Type ret = moduleApi.SetAntennaState(antennaNo, enable, dwell, power);
 
         return Napi::Number::New(env, ret);
     }
