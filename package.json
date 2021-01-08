@@ -1,6 +1,6 @@
 {
 	"name": "phoenixreadermodule",
-	"version": "2.1.1",
+	"version": "2.1.2",
 	"description": "phoenix reader module on Linux",
 	"main": "main.js",
 	"private": true,
