@@ -7,6 +7,7 @@ Napi::Object Rfid::Init(Napi::Env env, Napi::Object exports)
     Napi::Function func =
         DefineClass(env, "rfid",
                     {InstanceMethod("Open", &Rfid::Open),
+                     InstanceMethod("IsLicensed",&Rfid::isLicenced),
                      InstanceMethod("Close", &Rfid::Close),
                      InstanceMethod("GetAntennaState", &Rfid::GetAntennaState),
                      InstanceMethod("SetAntennaState", &Rfid::SetAntennaState),
@@ -29,6 +30,29 @@ Rfid::Rfid(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Rfid>(info)
     uhfMaxPower = 0;
 }
 
+Napi::Value Rfid::isLicenced(const Napi::CallbackInfo &info){
+    Napi::Env env = info.Env();
+    if (info.Length() < 2)
+    {
+        Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+    if (!info[0].IsString())
+    {
+        Napi::TypeError::New(env, "Wrong argument").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+    if (!info[1].IsString())
+    {
+        Napi::TypeError::New(env, "Wrong argument").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+    string macaddress = info[0].As<Napi::String>().Utf8Value();
+    string licensekey = info[1].As<Napi::String>().Utf8Value();
+    string newkey = key + macaddress+ key1 +"20220817123322"+ key2;
+    return Napi::Boolean::New(env,licensed);
+}
+
 Napi::Value Rfid::Open(const Napi::CallbackInfo &info)
 {
     Napi::Env env = info.Env();
@@ -45,6 +69,9 @@ Napi::Value Rfid::Open(const Napi::CallbackInfo &info)
         Napi::TypeError::New(env, "Wrong argument").ThrowAsJavaScriptException();
         return env.Null();
     }
+    if(licensed == false)
+        return Napi::Number::New(env,-9999);
+    
     if (reader_status != IDLE)
         return Napi::Number::New(env, -10);
     string device = info[0].As<Napi::String>().Utf8Value();

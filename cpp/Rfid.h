@@ -25,8 +25,13 @@ public:
 
 private:
     int uhfMaxPower;
+    bool licensed = false;
+    string key= "F0reV!sion";
+    string key1="phoenix";
+    string key2="psr9000";
     static Napi::FunctionReference s_constructor;
     ModuleAPI moduleApi;
+    Napi::Value isLicenced(const Napi::CallbackInfo &info);
     Napi::Value Open(const Napi::CallbackInfo &info);
     Napi::Value SetAntennaState(const Napi::CallbackInfo &info);
     Napi::Value GetAntennaState(const Napi::CallbackInfo &info);
