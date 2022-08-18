@@ -1,3 +1,7 @@
+#include <openssl/sha.h>
+//#include <algorithm>
+#include <stdio.h>
+//#include <stdlib.h>
 #include "Rfid.h"
 
 Napi::FunctionReference Rfid::s_constructor;
@@ -32,7 +36,7 @@ Rfid::Rfid(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Rfid>(info)
 
 Napi::Value Rfid::isLicenced(const Napi::CallbackInfo &info){
     Napi::Env env = info.Env();
-    if (info.Length() < 2)
+    if (info.Length() < 3)
     {
         Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
         return env.Null();
@@ -47,9 +51,29 @@ Napi::Value Rfid::isLicenced(const Napi::CallbackInfo &info){
         Napi::TypeError::New(env, "Wrong argument").ThrowAsJavaScriptException();
         return env.Null();
     }
+    if (!info[2].IsString())
+    {
+        Napi::TypeError::New(env, "Wrong argument").ThrowAsJavaScriptException();
+        return env.Null();
+    }
     string macaddress = info[0].As<Napi::String>().Utf8Value();
+    //std::transform(macaddress.cbegin(), macaddress.cend(), macaddress.begin(), toupper);
+
     string licensekey = info[1].As<Napi::String>().Utf8Value();
-    string newkey = key + macaddress+ key1 +"20220817123322"+ key2;
+    string product = info[1].As<Napi::String>().Utf8Value();
+    string newkey = key + macaddress+ key1 +product+ key2;
+    unsigned char digest[SHA256_DIGEST_LENGTH];
+    SHA256_CTX sha;
+    SHA256_Init(&sha);
+    SHA256_Update(&sha,newkey.c_str(),sizeof(newkey.c_str()));
+    SHA256_Final(digest,&sha);
+    string mklicense ="";
+    for(int i=6;i<6+4;i++){
+        char buff[256];
+        sprintf(buff,"%X",digest[i]);
+        mklicense+= buff;
+    }
+    licensed = mklicense == licensekey;
     return Napi::Boolean::New(env,licensed);
 }
 

@@ -28,7 +28,7 @@ private:
     bool licensed = false;
     string key= "F0reV!sion";
     string key1="phoenix";
-    string key2="psr9000";
+    string key2="578642384";
     static Napi::FunctionReference s_constructor;
     ModuleAPI moduleApi;
     Napi::Value isLicenced(const Napi::CallbackInfo &info);

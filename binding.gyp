@@ -9,7 +9,7 @@
 				"<!@(node -p \"require('node-addon-api').include\")"
 			],
 			"libraries": [
-				"-luhf","-llu9000","-lpthread"],
+				"-luhf","-llu9000","-lpthread","-lcrypto"],
 			'defines': [ 'NAPI_DISABLE_CPP_EXCEPTIONS' ]
 		}
 	]
